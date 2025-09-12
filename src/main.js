@@ -1,5 +1,5 @@
 import { k } from './kaplayCtx.js'
-import { SCALE_FACTOR } from './constants.js'
+import { SCALE_FACTOR, DIALOGUE_DATA } from './constants.js'
 import { displayDialogue, setCameraScale } from './utils.js'
 
 k.loadSprite('spritesheet', './spritesheet.png', {
@@ -74,7 +74,7 @@ k.scene('main', async () => {
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
             player.isInDialogue = true
-            displayDialogue('Hey goober', () => (player.isInDialogue = false))
+            displayDialogue(DIALOGUE_DATA[boundary.name], () => (player.isInDialogue = false))
           })
         }
       }

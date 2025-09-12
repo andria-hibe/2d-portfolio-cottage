@@ -26,9 +26,17 @@ export const displayDialogue = (text, onDisplayEnd) => {
     dialogueText.innerHTML = ''
     clearInterval(intervalRef)
     closeButton.removeEventListener('click', onCloseButtonClick)
+    document.removeEventListener('keydown', onEnterKeyPress)
+  }
+
+  const onEnterKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      onCloseButtonClick()
+    }
   }
 
   closeButton.addEventListener('click', onCloseButtonClick)
+  document.addEventListener('keydown', onEnterKeyPress)
 }
 
 export const setCameraScale = (k) => {
