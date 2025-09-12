@@ -1,6 +1,12 @@
 import { k } from './kaplayCtx.js'
-import { SCALE_FACTOR, DIALOGUE_DATA } from './constants.js'
-import { displayDialogue, setCameraScale } from './utils.js'
+import {
+  SCALE_FACTOR,
+  DIALOGUE_DATA,
+  PLAYER_SPEED,
+  CAMERA_OFFSET_Y,
+  MOVEMENT_ANGLES,
+} from './constants.js'
+import { displayDialogue, setCameraScale, createDebouncedCameraScale } from './utils.js'
 
 k.loadSprite('spritesheet', './spritesheet.png', {
   sliceX: 39,
@@ -14,6 +20,16 @@ k.loadSprite('spritesheet', './spritesheet.png', {
     'idle-up': 1038,
     'walk-up': { from: 1038, to: 1041, loop: true, speed: 8 },
   },
+
+  // white hair
+  //   anims: {
+  //     'idle-down': 964,
+  //     'walk-down': { from: 964, to: 967, loop: true, speed: 8 },
+  //     'idle-side': 1003,
+  //     'walk-side': { from: 1003, to: 1006, loop: true, speed: 8 },
+  //     'idle-up': 1042,
+  //     'walk-up': { from: 1042, to: 1045, loop: true, speed: 8 },
+  //   },
 
   //   frog
   //   anims: {
@@ -41,7 +57,18 @@ k.loadSprite('map', './map.png')
 k.setBackground(k.Color.fromHex('#A94442'))
 
 k.scene('main', async () => {
-  const mapData = await (await fetch('./map.json')).json()
+  let mapData
+  try {
+    const response = await fetch('./map.json')
+    if (!response.ok) {
+      throw new Error(`Failed to fetch map: ${response.status} ${response.statusText}`)
+    }
+    mapData = await response.json()
+  } catch (error) {
+    console.error('Error loading map data:', error)
+    mapData = { layers: [] }
+  }
+
   const layers = mapData.layers
 
   const map = k.add([k.sprite('map'), k.pos(0), k.scale(SCALE_FACTOR)])
@@ -54,7 +81,7 @@ k.scene('main', async () => {
     k.pos(),
     k.scale(SCALE_FACTOR),
     {
-      speed: 250,
+      speed: PLAYER_SPEED,
       direction: 'down',
       isInDialogue: false,
     },
@@ -97,31 +124,27 @@ k.scene('main', async () => {
 
   setCameraScale(k)
 
-  k.onResize(() => {
-    setCameraScale(k)
-  })
+  const debouncedCameraScale = createDebouncedCameraScale(k)
+  k.onResize(debouncedCameraScale)
 
   k.onUpdate(() => {
-    k.setCamPos(player.pos.x, player.pos.y + 100)
+    k.setCamPos(player.pos.x, player.pos.y + CAMERA_OFFSET_Y)
   })
 
   k.onMouseDown((mouseBtn) => {
-    if (mouseBtn !== 'left' || player.isInDialogue) {
-      return
-    }
+    if (mouseBtn !== 'left' || player.isInDialogue) return
 
     const worldMousePosition = k.toWorld(k.mousePos())
     player.moveTo(worldMousePosition, player.speed)
 
     const mouseAngle = player.pos.angle(worldMousePosition)
 
-    const lowerBound = 50
-    const upperBound = 125
+    const currentAnim = player.getCurAnim()?.name
 
     if (
-      mouseAngle > lowerBound &&
-      mouseAngle < upperBound &&
-      player.getCurAnim().name !== 'walk-up'
+      mouseAngle > MOVEMENT_ANGLES.LOWER_BOUND &&
+      mouseAngle < MOVEMENT_ANGLES.UPPER_BOUND &&
+      currentAnim !== 'walk-up'
     ) {
       player.play('walk-up')
       player.direction = 'up'
@@ -129,19 +152,19 @@ k.scene('main', async () => {
     }
 
     if (
-      mouseAngle < -lowerBound &&
-      mouseAngle > -upperBound &&
-      player.getCurAnim().name !== 'walk-down'
+      mouseAngle < -MOVEMENT_ANGLES.LOWER_BOUND &&
+      mouseAngle > -MOVEMENT_ANGLES.UPPER_BOUND &&
+      currentAnim !== 'walk-down'
     ) {
       player.play('walk-down')
       player.direction = 'down'
       return
     }
 
-    if (Math.abs(mouseAngle) > upperBound) {
+    if (Math.abs(mouseAngle) > MOVEMENT_ANGLES.UPPER_BOUND) {
       player.flipX = false
 
-      if (player.getCurAnim().name !== 'walk-side') {
+      if (currentAnim !== 'walk-side') {
         player.play('walk-side')
       }
 
@@ -149,10 +172,10 @@ k.scene('main', async () => {
       return
     }
 
-    if (Math.abs(mouseAngle) < lowerBound) {
+    if (Math.abs(mouseAngle) < MOVEMENT_ANGLES.LOWER_BOUND) {
       player.flipX = true
 
-      if (player.getCurAnim().name !== 'walk-side') {
+      if (currentAnim !== 'walk-side') {
         player.play('walk-side')
       }
 
@@ -180,6 +203,9 @@ k.scene('main', async () => {
     stopAnimation()
   })
   k.onKeyDown((key) => {
+    const directions = ['right', 'left', 'up', 'down']
+    if (!directions.includes(key)) return
+
     const keyMap = [
       k.isKeyDown('right'),
       k.isKeyDown('left'),
@@ -197,9 +223,12 @@ k.scene('main', async () => {
     if (nbOfKeyPressed > 1) return
 
     if (player.isInDialogue) return
+
+    const currentAnim = player.getCurAnim()?.name
+
     if (keyMap[0]) {
       player.flipX = false
-      if (player.getCurAnim().name !== 'walk-side') player.play('walk-side')
+      if (currentAnim !== 'walk-side') player.play('walk-side')
       player.direction = 'right'
       player.move(player.speed, 0)
       return
@@ -207,21 +236,21 @@ k.scene('main', async () => {
 
     if (keyMap[1]) {
       player.flipX = true
-      if (player.getCurAnim().name !== 'walk-side') player.play('walk-side')
+      if (currentAnim !== 'walk-side') player.play('walk-side')
       player.direction = 'left'
       player.move(-player.speed, 0)
       return
     }
 
     if (keyMap[2]) {
-      if (player.getCurAnim().name !== 'walk-up') player.play('walk-up')
+      if (currentAnim !== 'walk-up') player.play('walk-up')
       player.direction = 'up'
       player.move(0, -player.speed)
       return
     }
 
     if (keyMap[3]) {
-      if (player.getCurAnim().name !== 'walk-down') player.play('walk-down')
+      if (currentAnim !== 'walk-down') player.play('walk-down')
       player.direction = 'down'
       player.move(0, player.speed)
     }
