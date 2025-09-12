@@ -213,14 +213,14 @@ k.scene('main', async () => {
       k.isKeyDown('down'),
     ]
 
-    let nbOfKeyPressed = 0
+    let numOfKeyPressed = 0
     for (const key of keyMap) {
       if (key) {
-        nbOfKeyPressed++
+        numOfKeyPressed++
       }
     }
 
-    if (nbOfKeyPressed > 1) return
+    if (numOfKeyPressed > 1) return
 
     if (player.isInDialogue) return
 
