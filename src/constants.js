@@ -23,7 +23,7 @@ export const DIALOGUE_DATA = {
   tv: `That's my TV. I love watching movies and I'm currently working my way through The Sight and Sound Greatest Films of All Time 2022 list.
   It's taking a while but I'm enjoying it!`,
   bed: `This is where I sleep. A good night's rest sets me up for the best kind of day. My superpower is being able to sleep anywhere at any time and never having jet lag.`,
-  resume: `This is my desk and here you can find my resume. <a href="https://github.com/andria-hibe/resume/blob/dfa375354d0b82e84383bf72485e9d3737360a37/Resume%20-%20Andria%20Hibe.pdf" target="_blank">Have a look!</a>
+  resume: `This is my desk and here you can find my resume. <a href="https://github.com/andria-hibe/CV/blob/f1014bbf1168cd83954fba157465cf5fa2b16b68/Andria%20Hibe_CV.pdf" target="_blank">Have a look!</a>
     Contact me at <a href="mailto:andriacohibe@gmail.com">andriacohibe@gmail.com</a> if you have any interesting job opportunities!`,
   project: `This portfolio was made with Kaplay.js, a library for making games in JavaScript. It's my first time using it and it's been a lot of fun learning about it. Check out the code on <a href="https://github.com/andria-hibe/2d-portfolio-cottage" target="_blank">Github</a>.`,
   library: `I love reading books. I'm currently reading Drive Your Plow Over the Bones of the Dead by Olga Tokarczuk and Blindness by Jose Saramago. 
