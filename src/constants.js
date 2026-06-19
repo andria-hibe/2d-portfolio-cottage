@@ -26,7 +26,7 @@ export const DIALOGUE_DATA = {
   resume: `This is my desk and here you can find my resume. <a href="https://github.com/andria-hibe/CV/blob/f1014bbf1168cd83954fba157465cf5fa2b16b68/Andria%20Hibe_CV.pdf" target="_blank">Have a look!</a>
     Contact me at <a href="mailto:andriacohibe@gmail.com">andriacohibe@gmail.com</a> if you have any interesting job opportunities!`,
   project: `This portfolio was made with Kaplay.js, a library for making games in JavaScript. It's my first time using it and it's been a lot of fun learning about it. Check out the code on <a href="https://github.com/andria-hibe/2d-portfolio-cottage" target="_blank">Github</a>.`,
-  library: `I love reading books. I'm currently reading Nights at the Circus by Angela Carter, about an aerialist in a Victorian circus who may or may not be a swan, and Blindness by José Saramago, about a city where everyone goes blind and the chaos that ensues.
+  library: `I love reading books. I'm currently reading Nights at the Circus by Angela Carter, about an aerialist in a Victorian circus who may or may not be a swan, and Blindness by Jose Saramago, about a city where everyone goes blind and the chaos that ensues.
   I'd love to hear if you have any book recommendations.`,
   hobbies: `I love going on adventures, especially through travel and diving trips. I also enjoy hiking, surfing, and skiing whenever I get the chance.
   My latest adventure was a diving liveaboard on the Great Barrier Reef, where I got to witness the migration of dwarf minke whales. When I'm at home, you'll find me obsessing over my plants as I slowly turn my house into a jungle.`,
